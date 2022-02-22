@@ -13,10 +13,10 @@ def inject(_init_func):
         if ioc is None:
             return _init_func(cls, *args, **kwds)
 
-        test = inspect.signature(_init_func)
+        signature = inspect.signature(_init_func)
         cls_args = []
         cls_kwds = {}
-        for p in test.parameters.values():
+        for p in signature.parameters.values():
             if p.name == "self":
                 continue
             elif p.kind == p.POSITIONAL_ONLY:
