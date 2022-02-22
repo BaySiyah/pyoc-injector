@@ -1,7 +1,7 @@
 import functools
 import inspect
 
-from ioc.static import get_instance, instance_exists
+from ioc.static import get, exists
 
 
 def inject(_init_func):
@@ -20,11 +20,11 @@ def inject(_init_func):
             if p.name == "self":
                 continue
             elif p.kind == p.POSITIONAL_ONLY:
-                if instance_exists(p.annotation):
-                    cls_args.append(get_instance(p.annotation))
+                if exists(p.annotation):
+                    cls_args.append(get(p.annotation))
             elif p.kind == p.KEYWORD_ONLY or p.kind == p.POSITIONAL_OR_KEYWORD:
-                if instance_exists(p.annotation):
-                    cls_kwds[p.name] = get_instance(p.annotation)
+                if exists(p.annotation):
+                    cls_kwds[p.name] = get(p.annotation)
         return _init_func(cls, *tuple(cls_args), *args, **cls_kwds, **kwds)
 
     return inner

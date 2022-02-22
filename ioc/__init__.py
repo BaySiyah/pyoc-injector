@@ -1,3 +1,2 @@
-from ioc.container import container
-from ioc.static import get_instance, instance_exists
+from ioc.static import get, exists, register, register_singleton
 from ioc.injector import inject
