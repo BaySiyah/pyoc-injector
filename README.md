@@ -45,7 +45,7 @@ The ```foo``` object will be injected from the container.
 
 ## the ```inject``` decorator
 
-Use the ```inject``` decorator above the ```__init__()``` method to inject the ```bar``` object from the container.
+Use the ```@ioc.inject``` decorator above the ```__init__``` method to inject the ```bar``` object from the container.
 
 ```py
 import ioc
@@ -57,7 +57,7 @@ class Foo:
     ...
 
 class Bar:
-    ioc.inject
+    @ioc.inject
     def __init__(foo: Foo) -> None:
         ...
 
