@@ -62,7 +62,7 @@ class Bar:
         ...
 
     def say_hello() -> None:
-        print('Hello!')
+        print("Hello!")
 
 bar = ioc.get(Bar)
 bar.say_hello()

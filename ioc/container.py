@@ -1,46 +1,40 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Type, TypeVar
 
 
 @dataclass
 class BaseEntry(ABC):
+    """Base class of all entry types."""
 
-    type: type
-
-    def create_instance(self, *args, **kwds) -> object:
-        kwds["__from_ioc__"] = True
-        return self.type(*args, **kwds)
+    entry_type: type
 
     @abstractmethod
     def get(self) -> object:
-        ...
+        """Returns an instance of the registered entry type."""
 
 
+@dataclass
 class SingletonEntry(BaseEntry):
+    """A singlton entry. Returns always the same instance of an object."""
 
-    _instance: object
-
-    def __init__(self, type: type, instance: object = None) -> None:
-        super().__init__(type)
-        self._instance = instance
+    _instance: object = None
 
     def get(self) -> object:
         if not self._instance:
-            self._instance = self.create_instance()
+            self._instance = self.entry_type()
         return self._instance
 
 
+@dataclass
 class PerRequestEntry(BaseEntry):
+    """Returns always a new instance."""
 
-    _keyword_args: dict[str, Any]
-
-    def __init__(self, type: type, **kwargs) -> None:
-        super().__init__(type)
-        self._keyword_args = kwargs
+    arguments: tuple = field(default_factory=tuple)
+    keywords: dict[str, Any] = field(default_factory=dict)
 
     def get(self) -> object:
-        return self.create_instance(**self._keyword_args)
+        return self.entry_type(*self.arguments, **self.keywords, __from_ioc__=True)
 
 
 T = TypeVar("T")
@@ -54,26 +48,33 @@ class Container(ABC):
         self.reset()
 
     def reset(self) -> None:
+        """Removes all registered types from the container."""
         self._entries = {}
 
     def get_instance(self, type: Type[T]) -> T:
-        if not self.instance_exists(type):
+        """Returns the given type from the container."""
+        if not self.type_exists(type):
             raise Exception(f"type '{type.__name__}' is not registered")
         return self._entries[type].get()
 
-    def instance_exists(self, type: type) -> bool:
+    def type_exists(self, type: type) -> bool:
+        """Returns true if the type is registered."""
         return type in self._entries
 
     def _register(self, entry: BaseEntry) -> None:
-        if entry.type in self._entries:
-            raise Exception(f"type '{entry.type.__name__}' already exists")
-        self._entries[entry.type] = entry
+        if entry.entry_type in self._entries:
+            raise Exception(f"type '{entry.entry_type.__name__}' already exists")
+        self._entries[entry.entry_type] = entry
+
+    def register_per_request(self, type: type, *args, **kwds) -> None:
+        """Register a type per request. You can specify default arguments for the constructor."""
+        entry = PerRequestEntry(type, args, kwds)
+        self._register(entry)
 
     def register_singleton(self, type: type, instance: object = None) -> None:
-        self._register(SingletonEntry(type, instance))
-
-    def register_per_request(self, type: type, **kwargs) -> None:
-        self._register(PerRequestEntry(type, **kwargs))
+        """Register a singleton type."""
+        entry = SingletonEntry(type, instance)
+        self._register(entry)
 
 
 container: Container = Container()
