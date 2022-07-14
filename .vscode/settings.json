@@ -15,7 +15,7 @@
         "**/.vscode": true,
         "**/build": true,
         "**/dist": true,
-        "**/.gitignore": true,
+        "**/.gitignore": false,
         "**/__pycache__": true,
         "**/*.egg-info": true,
     }
