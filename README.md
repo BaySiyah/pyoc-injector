@@ -22,9 +22,10 @@ ioc.register(Foo, name="James", age=42)
 ioc.register_singleton(Bar)
 
 # Register a singlton instance
-ioc.register_singleton(type(bar), bar)
-# or
+bar = Bar()
 ioc.register_singleton(Bar, bar)
+# or
+ioc.register_singleton(type(bar), bar)
 ```
 
 ## get instance from container
