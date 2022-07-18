@@ -50,9 +50,6 @@ Use the ```@ioc.inject``` decorator above the ```__init__``` method to inject th
 ```py
 import ioc
 
-ioc.register(Foo)
-ioc.register(Bar)
-
 class Foo:
     ...
 
@@ -63,6 +60,9 @@ class Bar:
 
     def say_hello() -> None:
         print("Hello!")
+
+ioc.register(Foo)
+ioc.register(Bar)
 
 bar = ioc.get(Bar)
 bar.say_hello()
